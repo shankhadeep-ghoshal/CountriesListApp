@@ -98,8 +98,10 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        Parcelable pc = this.currencyHolderRV.getLayoutManager().onSaveInstanceState();
-        outState.putParcelable("data",pc);
+        Parcelable pcCurrency = this.currencyHolderRV.getLayoutManager().onSaveInstanceState();
+        Parcelable pcTimeZone = this.timezoneHolderRV.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable("currencyData",pcCurrency);
+        outState.putParcelable("timezoneData",pcTimeZone);
     }
 
     @Override
@@ -109,7 +111,11 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
             this.currencyHolderRV
                     .getLayoutManager()
                     .onRestoreInstanceState(savedInstanceState.
-                            getParcelable("data"));
+                            getParcelable("currencyData"));
+            this.timezoneHolderRV
+                    .getLayoutManager()
+                    .onRestoreInstanceState(savedInstanceState
+                            .getParcelable("timezoneData"));
         }
     }
 

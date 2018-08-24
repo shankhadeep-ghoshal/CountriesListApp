@@ -8,4 +8,6 @@
     <string name="currency_code">Code</string>
     <string name="currency_name">Name</string>
     <string name="currency_symbol">Symbol</string>
+    <string name="TAG_LIST_FRAGMENT">COUNTRY_LIST</string>
+    <string name="TAG_DETAILS_FRAGMENT">COUNTRY_DETAILS</string>
 </resources>

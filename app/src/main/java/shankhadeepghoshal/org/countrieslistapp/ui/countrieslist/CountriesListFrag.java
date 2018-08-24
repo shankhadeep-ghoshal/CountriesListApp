@@ -87,8 +87,6 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
         initialize();
         setUpListItemClickListener();
 
-        if(savedInstanceState!=null)
-            manageViewModelAndDetailsFragmentInvoker(savedInstanceState.getInt("currentPosition"));
         frag2FragCommViewModel
                 .getLiveDataListOfCountriesData()
                 .observe(this,countriesFullEntities ->
@@ -101,6 +99,19 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("currentPosition",this.countriesListRecyclerViewAdapter.getCurrentPosition());
+        outState.putParcelable("rvCurrentPosition",this.countriesEntireHolderRV.getLayoutManager().onSaveInstanceState());
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState!=null) {
+            manageViewModelAndDetailsFragmentInvoker(savedInstanceState.getInt("currentPosition"));
+            this.countriesEntireHolderRV
+                    .getLayoutManager()
+                    .onRestoreInstanceState(savedInstanceState
+                            .getParcelable("rvCurrentPosition"));
+        }
     }
 
     @Override

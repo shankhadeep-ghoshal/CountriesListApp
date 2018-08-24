@@ -4,8 +4,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import shankhadeepghoshal.org.countrieslistapp.DI.appcomponent.AppComponents;
 import shankhadeepghoshal.org.countrieslistapp.R;
 import shankhadeepghoshal.org.countrieslistapp.application.CentralApplication;
@@ -13,15 +16,20 @@ import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CountriesFullEntity;
 import shankhadeepghoshal.org.countrieslistapp.ui.countrieslist.CountriesListFrag;
 import shankhadeepghoshal.org.countrieslistapp.ui.countrydetail.CountryDetailsFrag;
 
-public class MainActivity extends AppCompatActivity implements IFragmentToFragmentMediator {
+public class MainActivity extends AppCompatActivity implements IFragmentToFragmentMediator, SwipeRefreshLayout.OnRefreshListener {
 
     public static final String TAG_LIST_FRAGMENT = "COUNTRY_LIST";
     public static final String TAG_DETAILS_FRAGMENT = "COUNTRY_DETAILS";
+
+    @BindView(R.id.MainActSwipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+        swipeRefreshLayout.setOnRefreshListener(this);
         CountriesListFrag countriesListFrag = CountriesListFrag.getInstance();
         conductFragmentTransaction(countriesListFrag,TAG_LIST_FRAGMENT, true, false);
     }
@@ -35,6 +43,11 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
             if (f instanceof  CountryDetailsFrag) fm.popBackStack();
             else this.finish();
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        // TODO : Code the refreshing data callback here
     }
 
     @Override
