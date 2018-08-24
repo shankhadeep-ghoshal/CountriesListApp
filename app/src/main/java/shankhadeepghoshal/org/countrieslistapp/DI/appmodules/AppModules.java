@@ -13,7 +13,6 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import lombok.Data;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -21,7 +20,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 import shankhadeepghoshal.org.countrieslistapp.services.localdatabase.CountriesLocalDb;
 
 @Module
-public @Data class AppModules {
+public class AppModules {
     private String baseUrl;
     private Context ctx;
 

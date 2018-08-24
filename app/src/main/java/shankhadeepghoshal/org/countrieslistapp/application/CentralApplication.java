@@ -27,7 +27,7 @@ public class CentralApplication extends Application {
     private void initAppComponents() {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         this.appComponents = DaggerAppComponents.builder()
-                .appModules(new AppModules(getBaseUrl(), this))
+                .appModules(new AppModules(getBaseUrl(),this))
                 .build();
     }
 

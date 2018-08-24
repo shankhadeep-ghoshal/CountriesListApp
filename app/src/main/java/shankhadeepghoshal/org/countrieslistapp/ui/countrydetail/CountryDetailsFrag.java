@@ -25,6 +25,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import shankhadeepghoshal.org.countrieslistapp.R;
 import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CountriesFullEntity;
+import shankhadeepghoshal.org.countrieslistapp.ui.IFragmentToFragmentMediator;
 import shankhadeepghoshal.org.countrieslistapp.ui.MainActivity;
 
 /**
@@ -48,9 +49,24 @@ public class CountryDetailsFrag extends Fragment {
 
     private CurrenciesRVAdapter currenciesRVAdapter;
     private TimeZoneRVAdapter timeZoneRVAdapter;
-
+    private IFragmentToFragmentMediator listeningActivity;
 
     public CountryDetailsFrag() {}
+
+    public static CountryDetailsFrag newInstance() {
+        return new CountryDetailsFrag();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try{
+            this.listeningActivity = (MainActivity) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement IFragmentToFragmentMediator");
+
+        }
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -68,8 +84,10 @@ public class CountryDetailsFrag extends Fragment {
         return v;
     }
 
-    public static CountryDetailsFrag newInstance() {
-        return new CountryDetailsFrag();
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("data",this.countriesFullEntity);
     }
 
     private void setUpLayoutBindings(@Nullable Bundle savedInstanceState, boolean currencyAdapterFlag, boolean timezoneAdapterFlag) {
@@ -103,11 +121,5 @@ public class CountryDetailsFrag extends Fragment {
         this.timezoneHolderRV
                 .addItemDecoration(new DividerItemDecoration(this.timezoneHolderRV.getContext(),
                         DividerItemDecoration.VERTICAL));
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable("data",this.countriesFullEntity);
     }
 }
