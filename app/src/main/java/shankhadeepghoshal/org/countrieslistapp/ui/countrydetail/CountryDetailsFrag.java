@@ -1,8 +1,10 @@
 package shankhadeepghoshal.org.countrieslistapp.ui.countrydetail;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,16 +25,22 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import shankhadeepghoshal.org.countrieslistapp.DI.countrycomponent.DaggerCountryComponents;
 import shankhadeepghoshal.org.countrieslistapp.R;
 import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CountriesFullEntity;
+import shankhadeepghoshal.org.countrieslistapp.mvp.presenter.CountryDetailsPresenter;
+import shankhadeepghoshal.org.countrieslistapp.mvp.view.CountryDetailsView;
+import shankhadeepghoshal.org.countrieslistapp.ui.Frag2FragCommViewModel;
 import shankhadeepghoshal.org.countrieslistapp.ui.IFragmentToFragmentMediator;
 import shankhadeepghoshal.org.countrieslistapp.ui.MainActivity;
+import shankhadeepghoshal.org.countrieslistapp.utilitiespackage.DetectInternetConnection;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CountryDetailsFrag extends Fragment {
+public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
     private CountriesFullEntity countriesFullEntity;
+    private Frag2FragCommViewModel frag2FragCommViewModel;
 
     @BindView(R.id.CountryFlagDetails)
     AppCompatImageView countryFlagDetails;
@@ -45,7 +53,10 @@ public class CountryDetailsFrag extends Fragment {
     @BindView(R.id.TimeZoneHolderRV)
     RecyclerView timezoneHolderRV;
 
-    @Inject Picasso picasso;
+    @Inject
+    Picasso picasso;
+    @Inject
+    CountryDetailsPresenter countryDetailsPresenter;
 
     private CurrenciesRVAdapter currenciesRVAdapter;
     private TimeZoneRVAdapter timeZoneRVAdapter;
@@ -62,9 +73,12 @@ public class CountryDetailsFrag extends Fragment {
         super.onAttach(context);
         try{
             this.listeningActivity = (MainActivity) context;
+            //noinspection ConstantConditions
+            DaggerCountryComponents.builder()
+                    .appComponents(((MainActivity)getActivity()).provideAppComponents())
+                    .build();
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement IFragmentToFragmentMediator");
-
         }
     }
 
@@ -74,37 +88,62 @@ public class CountryDetailsFrag extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_country_details, container, false);
         if(v!=null) ButterKnife.bind(this,v);
-        Bundle argumentsFromActivity = this.getArguments();
-        if (argumentsFromActivity!=null){
-            this.countriesFullEntity = (CountriesFullEntity) argumentsFromActivity.getSerializable("data");
-            setUpLayoutBindings(savedInstanceState,
-                    this.currenciesRVAdapter==null,
-                    this.timeZoneRVAdapter==null);
-        } else Objects.requireNonNull(getActivity()).getSupportFragmentManager().popBackStack();
+        //noinspection ConstantConditions
+        this.frag2FragCommViewModel = ViewModelProviders.of(getActivity()).get(Frag2FragCommViewModel.class);
+        setUpLayoutBindings(this.currenciesRVAdapter==null,
+                this.timeZoneRVAdapter==null);
         return v;
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable("data",this.countriesFullEntity);
+        Parcelable pc = this.currencyHolderRV.getLayoutManager().onSaveInstanceState();
+        outState.putParcelable("data",pc);
     }
 
-    private void setUpLayoutBindings(@Nullable Bundle savedInstanceState, boolean currencyAdapterFlag, boolean timezoneAdapterFlag) {
-        CountriesFullEntity holderInstance;
-        if(savedInstanceState!=null) holderInstance = (CountriesFullEntity) savedInstanceState.getSerializable("data");
-        else holderInstance = this.countriesFullEntity;
-        if (holderInstance != null) {
-            picasso.load(holderInstance.getFlag()).into(countryFlagDetails);
-            countryNameDetails.setText(holderInstance.getName());
-            if(currencyAdapterFlag)
-                currenciesRVAdapter = new CurrenciesRVAdapter(holderInstance.getCurrencies(),
-                        LayoutInflater.from(this.getContext()));
-            if(timezoneAdapterFlag)
-                timeZoneRVAdapter = new TimeZoneRVAdapter(holderInstance.getTimezones(),
-                        LayoutInflater.from(this.getContext()));
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if(savedInstanceState!=null) {
+            this.currencyHolderRV
+                    .getLayoutManager()
+                    .onRestoreInstanceState(savedInstanceState.
+                            getParcelable("data"));
         }
+    }
+
+    @Override
+    public void onLoadParticularCountryData(CountriesFullEntity countriesFullEntity) {
+        this.frag2FragCommViewModel.setSingleCountryEntry(countriesFullEntity);
+    }
+
+    @Override
+    public void onErrorEncountered(String errorMessage) {
+        this.frag2FragCommViewModel.showToastMessage(errorMessage);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private void setUpLayoutBindings(boolean currencyAdapterFlag, boolean timezoneAdapterFlag) {
         setUpRVs();
+        this.frag2FragCommViewModel
+                .getLiveDataSingleCountryData()
+                .observe(this,
+                        countriesFullEntity1 -> {
+                    if(countriesFullEntity1!=null)
+                        setUpDataForUI(currencyAdapterFlag, timezoneAdapterFlag, countriesFullEntity1);
+                });
+    }
+
+    private void setUpDataForUI(boolean currencyAdapterFlag, boolean timezoneAdapterFlag, CountriesFullEntity holderInstance) {
+        picasso.load(holderInstance.getFlag()).into(countryFlagDetails);
+        countryNameDetails.setText(holderInstance.getName());
+        if(currencyAdapterFlag)
+            currenciesRVAdapter = new CurrenciesRVAdapter(holderInstance.getCurrencies(),
+                    LayoutInflater.from(this.getContext()));
+        if(timezoneAdapterFlag)
+            timeZoneRVAdapter = new TimeZoneRVAdapter(holderInstance.getTimezones(),
+                    LayoutInflater.from(this.getContext()));
     }
 
     private void setUpRVs() {
@@ -121,5 +160,11 @@ public class CountryDetailsFrag extends Fragment {
         this.timezoneHolderRV
                 .addItemDecoration(new DividerItemDecoration(this.timezoneHolderRV.getContext(),
                         DividerItemDecoration.VERTICAL));
+    }
+
+    private void callToPresenterToUpdateOnInternetPresent(@NonNull String countryName) {
+        countryDetailsPresenter
+                .getParticularCountry(countryName,
+                DetectInternetConnection.isInternetAvailable(Objects.requireNonNull(this.getContext())));
     }
 }

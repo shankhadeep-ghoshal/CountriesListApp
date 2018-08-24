@@ -48,7 +48,11 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
 
     @Override
     public void invokeDetailsFragmentOnListItemClickedInListFragmentViewModel() {
-        CountryDetailsFrag countryDetailsFrag = CountryDetailsFrag.newInstance();
+
+        CountryDetailsFrag countryDetailsFrag =
+                (CountryDetailsFrag) getSupportFragmentManager().findFragmentByTag(TAG_DETAILS_FRAGMENT);
+
+        if(countryDetailsFrag!=null && countryDetailsFrag.isVisible())
         conductFragmentTransaction(countryDetailsFrag, TAG_DETAILS_FRAGMENT, false, true);
     }
 

@@ -5,7 +5,7 @@ import java.util.List;
 
 import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CountriesFullEntity;
 
-public interface MainView extends BaseView {
+public interface CountriesListView extends BaseView {
     void onLoadCountriesDataFull(List<CountriesFullEntity> countriesFullData);
-    void onErrorEncountered(String errorMessage);
+
 }

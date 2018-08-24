@@ -57,6 +57,11 @@ public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<Count
         return this.countriesFullEntityList.get(position);
     }
 
+    public void setCountriesFullEntityList(List<CountriesFullEntity> countriesFullEntityList) {
+        this.countriesFullEntityList = countriesFullEntityList;
+        notifyDataSetChanged();
+    }
+
     public int getCurrentPosition() {
         return currentPosition;
     }

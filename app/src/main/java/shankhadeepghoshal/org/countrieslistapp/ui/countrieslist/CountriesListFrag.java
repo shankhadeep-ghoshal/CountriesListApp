@@ -12,7 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -25,22 +24,23 @@ import butterknife.BindView;
 import shankhadeepghoshal.org.countrieslistapp.DI.countrycomponent.DaggerCountryComponents;
 import shankhadeepghoshal.org.countrieslistapp.R;
 import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CountriesFullEntity;
-import shankhadeepghoshal.org.countrieslistapp.mvp.presenter.MainPresenter;
-import shankhadeepghoshal.org.countrieslistapp.mvp.view.MainView;
+import shankhadeepghoshal.org.countrieslistapp.mvp.presenter.CountriesListPresenter;
+import shankhadeepghoshal.org.countrieslistapp.mvp.view.CountriesListView;
 import shankhadeepghoshal.org.countrieslistapp.ui.Frag2FragCommViewModel;
 import shankhadeepghoshal.org.countrieslistapp.ui.IFragmentToFragmentMediator;
 import shankhadeepghoshal.org.countrieslistapp.ui.MainActivity;
+import shankhadeepghoshal.org.countrieslistapp.utilitiespackage.DetectInternetConnection;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CountriesListFrag extends Fragment implements MainView {
+public class CountriesListFrag extends Fragment implements CountriesListView {
 
     @Inject
     Picasso picasso;
 
     @Inject
-    MainPresenter mainPresenter;
+    CountriesListPresenter countriesListPresenter;
 
     private List<CountriesFullEntity> countriesFullEntityList;
 
@@ -74,10 +74,10 @@ public class CountriesListFrag extends Fragment implements MainView {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        //noinspection ConstantConditions
         DaggerCountryComponents.builder()
                 .appComponents(((MainActivity)getActivity()).provideAppComponents())
                 .build();
-        this.mainPresenter.getCountries();
     }
 
     @Override
@@ -89,7 +89,10 @@ public class CountriesListFrag extends Fragment implements MainView {
 
         if(savedInstanceState!=null)
             manageViewModelAndDetailsFragmentInvoker(savedInstanceState.getInt("currentPosition"));
-        else manageViewModelAndDetailsFragmentInvoker(0);
+        frag2FragCommViewModel
+                .getLiveDataListOfCountriesData()
+                .observe(this,countriesFullEntities ->
+                        countriesListRecyclerViewAdapter.setCountriesFullEntityList(countriesFullEntityList));
 
         return inflater.inflate(R.layout.fragment_countries_list, container, false);
     }
@@ -98,6 +101,16 @@ public class CountriesListFrag extends Fragment implements MainView {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("currentPosition",this.countriesListRecyclerViewAdapter.getCurrentPosition());
+    }
+
+    @Override
+    public void onLoadCountriesDataFull(List<CountriesFullEntity> countriesFullData) {
+        this.frag2FragCommViewModel.setListOfCountriesData(countriesFullData);
+    }
+
+    @Override
+    public void onErrorEncountered(String errorMessage) {
+        this.frag2FragCommViewModel.showToastMessage(errorMessage);
     }
 
     private void initialize() {
@@ -111,6 +124,7 @@ public class CountriesListFrag extends Fragment implements MainView {
                 .addItemDecoration(new DividerItemDecoration(this.countriesEntireHolderRV.getContext()
                         ,DividerItemDecoration.VERTICAL));
         this.countriesEntireHolderRV.setAdapter(this.countriesListRecyclerViewAdapter);
+        this.countriesListPresenter.getCountries();
     }
 
     private void setUpListItemClickListener() {
@@ -121,19 +135,13 @@ public class CountriesListFrag extends Fragment implements MainView {
 
     private void manageViewModelAndDetailsFragmentInvoker(int position) {
         frag2FragCommViewModel
-                .setCountryEntry(countriesListRecyclerViewAdapter.getCountriesFullEntityAtPosition(position));
+                .setSingleCountryEntry(countriesListRecyclerViewAdapter.getCountriesFullEntityAtPosition(position));
 
         countriesListRecyclerViewAdapter.setCurrentPosition(position);
         listeningActivity.invokeDetailsFragmentOnListItemClickedInListFragmentViewModel();
     }
 
-    @Override
-    public void onLoadCountriesDataFull(List<CountriesFullEntity> countriesFullData) {
-        this.countriesFullEntityList = countriesFullData;
-    }
-
-    @Override
-    public void onErrorEncountered(String errorMessage) {
-        Toast.makeText(this.getContext(),errorMessage,Toast.LENGTH_SHORT).show();
+    private void updateListOfCountries() {
+        this.countriesListPresenter.updateCountriesList(DetectInternetConnection.isInternetAvailable(this.getContext()));
     }
 }

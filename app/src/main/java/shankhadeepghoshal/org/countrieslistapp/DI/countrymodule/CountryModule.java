@@ -8,39 +8,53 @@ import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
 import shankhadeepghoshal.org.countrieslistapp.DI.scope.ScopePerActivity;
-import shankhadeepghoshal.org.countrieslistapp.mvp.view.MainView;
+import shankhadeepghoshal.org.countrieslistapp.mvp.view.CountriesListView;
+import shankhadeepghoshal.org.countrieslistapp.mvp.view.CountryDetailsView;
 import shankhadeepghoshal.org.countrieslistapp.services.localdatabase.CountriesLocalDb;
 import shankhadeepghoshal.org.countrieslistapp.services.rest.IRestServiceDataFetcher;
 
 @Module
 public class CountryModule {
-    private final MainView mainViewReference;
+    private final CountriesListView countriesListViewReference;
+    private final CountryDetailsView countryDetailsViewReference;
 
-    public CountryModule(MainView mainViewReference) {
-        this.mainViewReference = mainViewReference;
+    public CountryModule(CountriesListView countriesListViewReference) {
+        this.countriesListViewReference = countriesListViewReference;
+        this.countryDetailsViewReference = null;
+    }
+
+    public CountryModule(CountryDetailsView countryDetailsViewReference) {
+        this.countryDetailsViewReference = countryDetailsViewReference;
+        this.countriesListViewReference = null;
     }
 
     @ScopePerActivity
     @Provides
-    public IRestServiceDataFetcher provideDataFetcher(Retrofit retrofit) {
+    IRestServiceDataFetcher provideDataFetcher(Retrofit retrofit) {
         return retrofit.create(IRestServiceDataFetcher.class);
     }
 
     @ScopePerActivity
     @Provides
-    public CountriesLocalDb provideCountriesLocalDb(RoomDatabase.Builder<CountriesLocalDb> databaseBuilder) {
+    CountriesLocalDb provideCountriesLocalDb(RoomDatabase.Builder<CountriesLocalDb> databaseBuilder) {
         return databaseBuilder.build();
     }
 
     @ScopePerActivity
     @Provides
-    public Picasso providePicasso(Picasso.Builder picassoBuilder) {
+    Picasso providePicasso(Picasso.Builder picassoBuilder) {
         return picassoBuilder.build();
     }
 
     @ScopePerActivity
     @Provides
-    public MainView provideMainView() {
-        return this.mainViewReference;
+    CountriesListView provideCountriesListView() {
+        return this.countriesListViewReference;
+    }
+
+    @ScopePerActivity
+    @Provides
+    CountryDetailsView provideCountriesDetailsView() {
+        return this.countryDetailsViewReference;
     }
 }
