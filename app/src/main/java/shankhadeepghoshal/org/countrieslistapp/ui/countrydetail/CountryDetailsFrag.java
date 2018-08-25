@@ -129,6 +129,11 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
         this.frag2FragCommViewModel.showToastMessage(errorMessage);
     }
 
+    @Override
+    public void onPerformUpdateAction() {
+        callToPresenterToUpdateSingleSPecifiedCountryOnInternetPresent(this.countriesFullEntity.getName());
+    }
+
     @SuppressWarnings("ConstantConditions")
     private void setUpLayoutBindings(boolean currencyAdapterFlag, boolean timezoneAdapterFlag) {
         setUpRVs();
@@ -168,7 +173,7 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
                         DividerItemDecoration.VERTICAL));
     }
 
-    private void callToPresenterToUpdateOnInternetPresent(@NonNull String countryName) {
+    private void callToPresenterToUpdateSingleSPecifiedCountryOnInternetPresent(@NonNull String countryName) {
         countryDetailsPresenter
                 .getParticularCountry(countryName,
                 DetectInternetConnection.isInternetAvailable(Objects.requireNonNull(this.getContext())));

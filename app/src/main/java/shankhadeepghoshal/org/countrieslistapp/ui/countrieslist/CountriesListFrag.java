@@ -124,6 +124,11 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
         this.frag2FragCommViewModel.showToastMessage(errorMessage);
     }
 
+    @Override
+    public void onPerformUpdateAction() {
+        callToPresenterToUpdateListOfCountriesOnInternetPresent();
+    }
+
     private void initialize() {
         this.frag2FragCommViewModel = ViewModelProviders.of(Objects.requireNonNull(getActivity())).get(Frag2FragCommViewModel.class);
         this.countriesEntireHolderRV = new RecyclerView(this.getContext());
@@ -152,7 +157,7 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
         listeningActivity.invokeDetailsFragmentOnListItemClickedInListFragmentViewModel();
     }
 
-    private void updateListOfCountries() {
+    private void callToPresenterToUpdateListOfCountriesOnInternetPresent() {
         this.countriesListPresenter.updateCountriesList(DetectInternetConnection.isInternetAvailable(this.getContext()));
     }
 }

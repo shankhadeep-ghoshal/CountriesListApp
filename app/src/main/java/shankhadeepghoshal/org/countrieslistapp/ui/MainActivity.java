@@ -13,6 +13,7 @@ import shankhadeepghoshal.org.countrieslistapp.DI.appcomponent.AppComponents;
 import shankhadeepghoshal.org.countrieslistapp.R;
 import shankhadeepghoshal.org.countrieslistapp.application.CentralApplication;
 import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CountriesFullEntity;
+import shankhadeepghoshal.org.countrieslistapp.mvp.view.BaseView;
 import shankhadeepghoshal.org.countrieslistapp.ui.countrieslist.CountriesListFrag;
 import shankhadeepghoshal.org.countrieslistapp.ui.countrydetail.CountryDetailsFrag;
 
@@ -48,6 +49,10 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
     @Override
     public void onRefresh() {
         // TODO : Code the refreshing data callback here
+        Fragment countryListFragment = returnNonNullRunningFragmentByTagName(TAG_LIST_FRAGMENT);
+        Fragment countryDetailsFragment = returnNonNullRunningFragmentByTagName(TAG_DETAILS_FRAGMENT);
+        if (countryDetailsFragment != null) ((CountryDetailsFrag)countryDetailsFragment).onPerformUpdateAction();
+        if (countryListFragment != null) ((CountriesListFrag)countryListFragment).onPerformUpdateAction();
     }
 
     @Override
@@ -69,6 +74,20 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
         conductFragmentTransaction(countryDetailsFrag, TAG_DETAILS_FRAGMENT, false, true);
     }
 
+    public AppComponents provideAppComponents() {
+        return ((CentralApplication)getApplication()).getAppComponents();
+    }
+
+    private void makeViewsSignalUpdateOfData(BaseView view) {
+        view.onPerformUpdateAction();
+    }
+
+    private Fragment returnNonNullRunningFragmentByTagName(String tagName) {
+        Fragment fragmentForProcessing = getSupportFragmentManager().findFragmentByTag(tagName);
+        if(fragmentForProcessing!=null && fragmentForProcessing.isVisible()) return fragmentForProcessing;
+        return null;
+    }
+
     /**
      * @param targetFragment - fragment instance to be shown
      * @param tag - fragment tag
@@ -81,9 +100,5 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
         else fragmentTransaction.add(R.id.fragmentCanvas,targetFragment,tag);
         if(backStackFlag)fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-    }
-
-    public AppComponents provideAppComponents() {
-        return ((CentralApplication)getApplication()).getAppComponents();
     }
 }
