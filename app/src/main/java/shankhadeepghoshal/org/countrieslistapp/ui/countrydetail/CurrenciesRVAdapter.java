@@ -12,7 +12,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import shankhadeepghoshal.org.countrieslistapp.R;
-import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CurrenciesEntity;
+import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CurrenciesEntity;
 
 public class CurrenciesRVAdapter extends RecyclerView.Adapter<CurrenciesRVAdapter.CurrenciesViewHolder> {
     private List<CurrenciesEntity> currenciesEntities;

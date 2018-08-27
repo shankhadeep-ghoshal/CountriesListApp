@@ -2,7 +2,7 @@
 #include <string>
 
 const char * returnURL() {
-    std::string restEndpoint = "https://restcountries.eu/rest/v2";
+    std::string restEndpoint = "https://restcountries.eu/rest/v2/";
     return restEndpoint.c_str();
 }
 

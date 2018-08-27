@@ -12,20 +12,20 @@ import shankhadeepghoshal.org.countrieslistapp.mvp.view.CountriesListView;
 import shankhadeepghoshal.org.countrieslistapp.mvp.view.CountryDetailsView;
 import shankhadeepghoshal.org.countrieslistapp.services.localdatabase.CountriesLocalDb;
 import shankhadeepghoshal.org.countrieslistapp.services.rest.IRestServiceDataFetcher;
+import shankhadeepghoshal.org.countrieslistapp.ui.countrieslist.CountriesListFrag;
+import shankhadeepghoshal.org.countrieslistapp.ui.countrydetail.CountryDetailsFrag;
 
 @Module
 public class CountryModule {
-    private final CountriesListView countriesListViewReference;
-    private final CountryDetailsView countryDetailsViewReference;
+    private CountriesListFrag countriesListViewReference;
+    private CountryDetailsFrag countryDetailsViewReference;
 
-    public CountryModule(CountriesListView countriesListViewReference) {
+    public CountryModule(CountriesListFrag countriesListViewReference) {
         this.countriesListViewReference = countriesListViewReference;
-        this.countryDetailsViewReference = null;
     }
 
-    public CountryModule(CountryDetailsView countryDetailsViewReference) {
+    public CountryModule(CountryDetailsFrag countryDetailsViewReference) {
         this.countryDetailsViewReference = countryDetailsViewReference;
-        this.countriesListViewReference = null;
     }
 
     @ScopePerActivity

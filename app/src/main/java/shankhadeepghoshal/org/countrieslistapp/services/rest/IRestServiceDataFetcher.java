@@ -5,11 +5,11 @@ import java.util.List;
 import io.reactivex.Flowable;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
-import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CountriesFullEntity;
+import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFullEntity;
 
 public interface IRestServiceDataFetcher {
-    @GET("/all")
+    @GET("all")
     Flowable<List<CountriesFullEntity>> getListOfCountriesData();
-    @GET("/name/{name}")
+    @GET("name/{name}")
     Flowable<CountriesFullEntity> getParticularCountry(@Path("name") String name);
 }

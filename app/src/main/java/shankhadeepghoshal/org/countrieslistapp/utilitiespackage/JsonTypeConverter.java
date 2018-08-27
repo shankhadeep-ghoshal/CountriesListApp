@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 
-import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CurrenciesEntity;
+import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CurrenciesEntity;
 
 
 public class JsonTypeConverter {

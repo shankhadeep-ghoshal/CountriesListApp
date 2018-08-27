@@ -5,11 +5,10 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
 import java.util.List;
 
-import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CountriesFullEntity;
+import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFullEntity;
 
 public class Frag2FragCommViewModel extends AndroidViewModel {
     private final MutableLiveData<CountriesFullEntity> singleCountryData = new MutableLiveData<>();
@@ -34,9 +33,5 @@ public class Frag2FragCommViewModel extends AndroidViewModel {
 
     public LiveData<List<CountriesFullEntity>> getLiveDataListOfCountriesData() {
         return this.listOfCountriesData;
-    }
-
-    public void showToastMessage(@NonNull String message) {
-        Toast.makeText(getApplication().getApplicationContext(),message,Toast.LENGTH_SHORT).show();
     }
 }

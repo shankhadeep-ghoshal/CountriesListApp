@@ -15,7 +15,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import shankhadeepghoshal.org.countrieslistapp.R;
-import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CountriesFullEntity;
+import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFullEntity;
 
 public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<CountriesListRecyclerViewAdapter.CountriesListViewHolder>{
     private List<CountriesFullEntity> countriesFullEntityList;

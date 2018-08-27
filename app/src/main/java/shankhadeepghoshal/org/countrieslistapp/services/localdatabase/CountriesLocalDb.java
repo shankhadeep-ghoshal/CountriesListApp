@@ -4,7 +4,7 @@ import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 
-import shankhadeepghoshal.org.countrieslistapp.mvp.entities.CountriesFullEntity;
+import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFullEntity;
 import shankhadeepghoshal.org.countrieslistapp.utilitiespackage.JsonTypeConverter;
 
 @Database(entities = CountriesFullEntity.class, version = 1, exportSchema = false)
