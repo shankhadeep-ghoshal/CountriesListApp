@@ -86,7 +86,7 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
         super.onAttach(context);
         try{
             this.listeningActivity = (MainActivity) context;
-            //noinspection ConstantConditions
+            this.frag2FragCommViewModel = ViewModelProviders.of((MainActivity) context).get(Frag2FragCommViewModel.class);
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement IFragmentToFragmentMediator");
         }
@@ -98,10 +98,10 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_country_details, container, false);
         if(v!=null) this.unbinder = ButterKnife.bind(this,v);
-        //noinspection ConstantConditions
-        this.frag2FragCommViewModel = ViewModelProviders.of(getActivity()).get(Frag2FragCommViewModel.class);
+
         setUpLayoutBindings(this.currenciesRVAdapter==null,
                 this.timeZoneRVAdapter==null);
+
         return v;
     }
 
@@ -135,14 +135,13 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
 
     @Override
     public void onPerformUpdateAction() {
-        callToPresenterToUpdateSingleSPecifiedCountryOnInternetPresent(Objects
+        callToPresenterToUpdateSingleSpecifiedCountryOnInternetPresent(Objects
                 .requireNonNull(this.frag2FragCommViewModel
                         .getLiveDataSingleCountryData()
                         .getValue())
                 .getName());
     }
 
-    @SuppressWarnings("ConstantConditions")
     private void setUpLayoutBindings(boolean currencyAdapterFlag, boolean timezoneAdapterFlag) {
         setUpRVs();
         this.frag2FragCommViewModel
@@ -180,7 +179,7 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
                         DividerItemDecoration.VERTICAL));
     }
 
-    private void callToPresenterToUpdateSingleSPecifiedCountryOnInternetPresent(@NonNull String countryName) {
+    private void callToPresenterToUpdateSingleSpecifiedCountryOnInternetPresent(@NonNull String countryName) {
         this.countryDetailsPresenter
                 .getParticularCountry(countryName,
                 DetectInternetConnection.isInternetAvailable(Objects.requireNonNull(this.getContext())));

@@ -26,7 +26,8 @@ public class CountryDetailsRepository {
             this.countriesLocalDb.getCountriesLocalDbDAO().insertSingleCountry(countriesFullEntityFlowable.blockingSingle());
         } else countriesFullEntityFlowable = this.countriesLocalDb
                     .getCountriesLocalDbDAO()
-                    .getCountryByName(countryName);
+                    .getCountryByName(countryName)
+                .toFlowable();
         return countriesFullEntityFlowable;
     }
 }

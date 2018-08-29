@@ -42,11 +42,10 @@ import shankhadeepghoshal.org.countrieslistapp.utilitiespackage.DetectInternetCo
  */
 public class CountriesListFrag extends Fragment implements CountriesListView {
 
-
     public static final String TAG_LIST_FRAGMENT = "ListFragment";
+
     @Inject
     Picasso picasso;
-
     @Inject
     CountriesListPresenter countriesListPresenter;
 
@@ -55,9 +54,7 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
 
     @BindView(R.id.CountriesEntireHolderRV)
     RecyclerView countriesEntireHolderRV;
-
     private CountriesListRecyclerViewAdapter countriesListRecyclerViewAdapter;
-
     private Unbinder unbinder;
 
     public CountriesListFrag() {
@@ -76,9 +73,12 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
         super.onAttach(context);
         try{
             this.listeningActivity = (MainActivity) context;
+
+            this.frag2FragCommViewModel = ViewModelProviders
+                    .of((MainActivity) context)
+                    .get(Frag2FragCommViewModel.class);
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement IFragmentToFragmentMediator");
-
         }
     }
 
@@ -96,18 +96,18 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_countries_list, container, false);
         if(v!=null) this.unbinder = ButterKnife.bind(this,v);
-        //noinspection ConstantConditions
-        this.frag2FragCommViewModel = ViewModelProviders.of(getActivity()).get(Frag2FragCommViewModel.class);
+
         // Inflate the layout for this fragment
         initialize();
+        this.countriesListPresenter.getCountries();
         setUpListItemClickListener();
 
         frag2FragCommViewModel
                 .getLiveDataListOfCountriesData()
                 .observe(this,countriesFullEntities ->
                         countriesListRecyclerViewAdapter.setCountriesFullEntityList(countriesFullEntities));
-        this.countriesListPresenter.getCountries();
         Log.d(TAG_LIST_FRAGMENT,"List Fragment View Created");
+
         return v;
     }
 
@@ -132,7 +132,7 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
 
     @Override
     public void onLoadCountriesDataFull(List<CountriesFullEntity> countriesFullData) {
-        this.countriesListRecyclerViewAdapter.setCountriesFullEntityList(countriesFullData);
+//        this.countriesListRecyclerViewAdapter.setCountriesFullEntityList(countriesFullData);
         Log.d(TAG_LIST_FRAGMENT,"Data Received in List Fragment");
         Log.d(TAG_LIST_FRAGMENT,countriesFullData.get(0).getName());
         this.frag2FragCommViewModel.setListOfCountriesData(countriesFullData);
@@ -145,7 +145,7 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
 
     @Override
     public void onPerformUpdateAction() {
-        callToPresenterToUpdateListOfCountriesOnInternetPresent();
+        callToPresenterToUpdateListOfCountriesOnInternetPresent(this.getContext());
     }
 
     private void initialize() {
@@ -175,8 +175,8 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
         this.listeningActivity.invokeDetailsFragmentOnListItemClickedInListFragmentViewModel();
     }
 
-    private void callToPresenterToUpdateListOfCountriesOnInternetPresent() {
-        this.countriesListPresenter.updateCountriesList(DetectInternetConnection.isInternetAvailable(this.getContext()));
+    private void callToPresenterToUpdateListOfCountriesOnInternetPresent(Context context) {
+        this.countriesListPresenter.updateCountriesList(DetectInternetConnection.isInternetAvailable(context));
     }
 
     @Override

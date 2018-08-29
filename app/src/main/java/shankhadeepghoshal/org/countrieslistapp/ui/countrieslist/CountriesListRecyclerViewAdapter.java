@@ -7,6 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
@@ -19,12 +21,12 @@ import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFull
 
 public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<CountriesListRecyclerViewAdapter.CountriesListViewHolder>{
     private List<CountriesFullEntity> countriesFullEntityList;
-    private LayoutInflater layoutInflater;
-    private Picasso picasso;
+    private final LayoutInflater layoutInflater;
+    private final Picasso picasso;
     private CountriesListRVClickListener countriesListRVClickListener;
     private int currentPosition;
 
-    public CountriesListRecyclerViewAdapter(List<CountriesFullEntity> countriesFullEntityList, LayoutInflater layoutInflater, Picasso picasso) {
+    CountriesListRecyclerViewAdapter(List<CountriesFullEntity> countriesFullEntityList, LayoutInflater layoutInflater, Picasso picasso) {
         this.countriesFullEntityList = countriesFullEntityList;
         this.layoutInflater = layoutInflater;
         this.picasso = picasso;
@@ -34,7 +36,7 @@ public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<Count
     @NonNull
     @Override
     public CountriesListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new CountriesListViewHolder(layoutInflater.inflate(R.layout.countries_list_layout,parent,false));
+        return new CountriesListViewHolder(this.layoutInflater.inflate(R.layout.countries_list_layout,parent,false));
     }
 
     @Override
@@ -49,36 +51,35 @@ public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<Count
         return this.countriesFullEntityList.size();
     }
 
-    public void setItemClickListener(CountriesListRVClickListener itemClickListener) {
+    void setItemClickListener(CountriesListRVClickListener itemClickListener) {
         this.countriesListRVClickListener = itemClickListener;
     }
 
-    public CountriesFullEntity getCountriesFullEntityAtPosition(int position) {
+    CountriesFullEntity getCountriesFullEntityAtPosition(int position) {
         return this.countriesFullEntityList.get(position);
     }
 
-    public void setCountriesFullEntityList(List<CountriesFullEntity> countriesFullEntityList) {
+    void setCountriesFullEntityList(List<CountriesFullEntity> countriesFullEntityList) {
         this.countriesFullEntityList = countriesFullEntityList;
         notifyDataSetChanged();
     }
 
-    public int getCurrentPosition() {
+    int getCurrentPosition() {
         return currentPosition;
     }
 
-    public void setCurrentPosition(int currentPosition) {
+    void setCurrentPosition(int currentPosition) {
         this.currentPosition = currentPosition;
     }
 
     class CountriesListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         @BindView(R.id.NameOfCountry)
-        AppCompatTextView nameOfCountry;
+        TextView nameOfCountry;
         @BindView(R.id.CountryIcon)
-        AppCompatImageView countryIcon;
+        ImageView countryIcon;
         CountriesListViewHolder(View itemView) {
             super(itemView);
-            ButterKnife.bind(this,itemView);
         }
 
         @Override
@@ -87,7 +88,7 @@ public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<Count
         }
     }
 
-    public interface CountriesListRVClickListener {
+    interface CountriesListRVClickListener {
         void onListItemClicked(View view, int position);
     }
 }

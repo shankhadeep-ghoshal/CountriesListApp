@@ -8,16 +8,16 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import io.reactivex.Flowable;
+import io.reactivex.Single;
 import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFullEntity;
 
 @Dao
 public interface CountriesLocalDbDAO {
     @Query("SELECT * FROM Countries")
-    Flowable<List<CountriesFullEntity>> getCountriesList();
+    Single<List<CountriesFullEntity>> getCountriesList();
 
     @Query("SELECT * FROM Countries WHERE name LIKE :countryName")
-    Flowable<CountriesFullEntity> getCountryByName(String countryName);
+    Single<CountriesFullEntity> getCountryByName(String countryName);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAllCountries(List<CountriesFullEntity> countryList);

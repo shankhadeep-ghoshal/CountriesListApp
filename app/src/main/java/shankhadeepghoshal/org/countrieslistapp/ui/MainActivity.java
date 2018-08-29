@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
         Log.d(TAG_MAIN_ACTIVITY,"Main Activity View Created");
         if(config.smallestScreenWidthDp<600){
             CountriesListFrag countriesListFrag = new CountriesListFrag();
-            conductFragmentTransaction(countriesListFrag,TAG_LIST_FRAGMENT, true, true);
+            conductFragmentTransaction(countriesListFrag,TAG_LIST_FRAGMENT, false, true);
             Log.d(TAG_MAIN_ACTIVITY,"Main Activity < 600 and portrait");
         }
     }
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
                 (CountryDetailsFrag) getSupportFragmentManager().findFragmentByTag(TAG_DETAILS_FRAGMENT);
 
         if(countryDetailsFrag!=null && countryDetailsFrag.isVisible())
-        conductFragmentTransaction(countryDetailsFrag, TAG_DETAILS_FRAGMENT, false, true);
+        conductFragmentTransaction(countryDetailsFrag, TAG_DETAILS_FRAGMENT, true, true);
     }
 
 /*

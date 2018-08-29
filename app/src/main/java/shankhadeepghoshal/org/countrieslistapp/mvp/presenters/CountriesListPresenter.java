@@ -18,9 +18,11 @@ import shankhadeepghoshal.org.countrieslistapp.mvp.models.repository.countriesli
 public class CountriesListPresenter extends BasePresenter<CountriesListView>
         implements FlowableSubscriber<List<CountriesFullEntity>> {
 
+    private static final String TAG_ListPresenter = "CountriesListPresenter";
+
     private final CountriesListRepository countriesListRepository;
 
-    public static final String TAG_ListPresenter = "CountriesListPresenter";
+    private Subscription subscription;
 
     @Inject
     public CountriesListPresenter(CountriesListRepository countriesListRepository) {
@@ -41,6 +43,7 @@ public class CountriesListPresenter extends BasePresenter<CountriesListView>
     public void onNext(List<CountriesFullEntity> countriesFullEntities) {
         Log.d(TAG_ListPresenter,"Executing onNext()");
         getInjectedView().onLoadCountriesDataFull(countriesFullEntities);
+        subscription.cancel();
     }
 
     @Override
@@ -51,10 +54,11 @@ public class CountriesListPresenter extends BasePresenter<CountriesListView>
 
     @Override
     public void onComplete() {
-
+        if(subscription!=null) subscription.cancel();
     }
 
     public void onSubscribe(Subscription s) {
         s.request(Long.MAX_VALUE);
+        this.subscription = s;
     }
 }

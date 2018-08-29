@@ -16,6 +16,8 @@ public class CountryDetailsPresenter extends BasePresenter<CountryDetailsView> i
 
     private final CountryDetailsRepository countryDetailsRepository;
 
+    private Subscription subscription;
+
     @Inject
     public CountryDetailsPresenter(CountryDetailsRepository countryDetailsRepository) {
         this.countryDetailsRepository = countryDetailsRepository;
@@ -30,6 +32,7 @@ public class CountryDetailsPresenter extends BasePresenter<CountryDetailsView> i
     @Override
     public void onNext(CountriesFullEntity countriesFullEntity) {
         getInjectedView().onLoadParticularCountryData(countriesFullEntity);
+        this.subscription.cancel();
     }
 
     @Override
@@ -39,12 +42,14 @@ public class CountryDetailsPresenter extends BasePresenter<CountryDetailsView> i
 
     @Override
     public void onComplete() {
-
+        if(this.subscription!=null) subscription.cancel();
     }
 
     @Override
     public void onSubscribe(Subscription d) {
         // TODO: Lets think of what to do
+        this.subscription = d;
+        d.request(Long.MAX_VALUE);
     }
 
 }

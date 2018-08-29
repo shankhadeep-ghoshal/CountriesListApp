@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.SwipeRefreshLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.MainActivity"
-    android:id="@+id/MainActSwipeRefreshLayout">
-    <FrameLayout
-        android:id="@+id/fragmentCanvas"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent"/>
-</android.support.v4.widget.SwipeRefreshLayout>
+<FrameLayout
+android:id="@+id/fragmentCanvas"
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+tools:context=".ui.MainActivity">
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/MainActSwipeRefreshLayout"
+        android:layout_height="20dp"
+        android:layout_width="match_parent">
+    </android.support.v4.widget.SwipeRefreshLayout>
+</FrameLayout>

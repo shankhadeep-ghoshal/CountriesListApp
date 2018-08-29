@@ -24,11 +24,10 @@ public class BasePresenter<T extends BaseView> {
     }
 
     protected <V> void subscribeToObserver(Flowable<V> flowable, FlowableSubscriber<V> flowableSubscriber) {
-        flowable
-                .subscribeOn(Schedulers.io())
+        flowable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(subscription -> Log.d(TAG_BASE_PRESENTER,"Subscribed"))
                 .doAfterNext(v -> Log.d(TAG_BASE_PRESENTER,"onNext() completed"))
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(flowableSubscriber);
     }
 }
