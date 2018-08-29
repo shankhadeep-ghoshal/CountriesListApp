@@ -11,18 +11,21 @@ import javax.inject.Inject;
 
 import io.reactivex.Flowable;
 import io.reactivex.FlowableSubscriber;
+import io.reactivex.Maybe;
+import io.reactivex.MaybeObserver;
+import io.reactivex.disposables.Disposable;
 import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFullEntity;
 import shankhadeepghoshal.org.countrieslistapp.mvp.view.CountriesListView;
 import shankhadeepghoshal.org.countrieslistapp.mvp.models.repository.countrieslist.CountriesListRepository;
 
 public class CountriesListPresenter extends BasePresenter<CountriesListView>
-        implements FlowableSubscriber<List<CountriesFullEntity>> {
+        implements MaybeObserver<List<CountriesFullEntity>> {
 
     private static final String TAG_ListPresenter = "CountriesListPresenter";
 
     private final CountriesListRepository countriesListRepository;
 
-    private Subscription subscription;
+    private Disposable disposable;
 
     @Inject
     public CountriesListPresenter(CountriesListRepository countriesListRepository) {
@@ -30,20 +33,26 @@ public class CountriesListPresenter extends BasePresenter<CountriesListView>
     }
 
     public void getCountries() {
-        Flowable<List<CountriesFullEntity>> listOfCountriesData = this.countriesListRepository.getCountries();
+        Maybe<List<CountriesFullEntity>> listOfCountriesData = this.countriesListRepository
+                .getCountries();
         subscribeToObserver(listOfCountriesData, this);
     }
 
     public void updateCountriesList(@NonNull Boolean isInternetThere) {
-        Flowable<List<CountriesFullEntity>> newCountriesFullData = this.countriesListRepository.updateCountriesList(isInternetThere);
+        Maybe<List<CountriesFullEntity>> newCountriesFullData = this.countriesListRepository
+                .updateCountriesList(isInternetThere);
         subscribeToObserver(newCountriesFullData,this);
     }
 
     @Override
-    public void onNext(List<CountriesFullEntity> countriesFullEntities) {
+    public void onSubscribe(Disposable d) {
+        this.disposable = d;
+    }
+
+    @Override
+    public void onSuccess(List<CountriesFullEntity> countriesFullEntities) {
         Log.d(TAG_ListPresenter,"Executing onNext()");
         getInjectedView().onLoadCountriesDataFull(countriesFullEntities);
-        subscription.cancel();
     }
 
     @Override
@@ -54,11 +63,6 @@ public class CountriesListPresenter extends BasePresenter<CountriesListView>
 
     @Override
     public void onComplete() {
-        if(subscription!=null) subscription.cancel();
-    }
-
-    public void onSubscribe(Subscription s) {
-        s.request(Long.MAX_VALUE);
-        this.subscription = s;
+        if(!disposable.isDisposed()) disposable.dispose();
     }
 }

@@ -1,5 +1,6 @@
 package shankhadeepghoshal.org.countrieslistapp.ui.countrieslist;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
@@ -42,7 +43,7 @@ public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<Count
     @Override
     public void onBindViewHolder(@NonNull CountriesListViewHolder holder, int position) {
         CountriesFullEntity countriesFullEntity = countriesFullEntityList.get(position);
-        picasso.load(countriesFullEntity.getFlag()).into(holder.countryIcon);
+        picasso.load(Uri.parse(countriesFullEntity.getFlag())).into(holder.countryIcon);
         holder.nameOfCountry.setText(countriesFullEntity.getName());
     }
 
@@ -74,12 +75,12 @@ public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<Count
 
     class CountriesListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.NameOfCountry)
         TextView nameOfCountry;
-        @BindView(R.id.CountryIcon)
-        ImageView countryIcon;
+        AppCompatImageView countryIcon;
         CountriesListViewHolder(View itemView) {
             super(itemView);
+            this.countryIcon = itemView.findViewById(R.id.CountryIcon);
+            this.nameOfCountry = itemView.findViewById(R.id.NameOfCountry);
         }
 
         @Override

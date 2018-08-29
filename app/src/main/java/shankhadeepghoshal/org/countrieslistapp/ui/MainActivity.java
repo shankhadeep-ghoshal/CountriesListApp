@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
         Log.d(TAG_MAIN_ACTIVITY,"Main Activity View Created");
         if(config.smallestScreenWidthDp<600){
             CountriesListFrag countriesListFrag = new CountriesListFrag();
-            conductFragmentTransaction(countriesListFrag,TAG_LIST_FRAGMENT, false, true);
+            conductFragmentTransaction(countriesListFrag,TAG_LIST_FRAGMENT, true, false);
             Log.d(TAG_MAIN_ACTIVITY,"Main Activity < 600 and portrait");
         }
     }
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
                 (CountryDetailsFrag) getSupportFragmentManager().findFragmentByTag(TAG_DETAILS_FRAGMENT);
 
         if(countryDetailsFrag!=null && countryDetailsFrag.isVisible())
-        conductFragmentTransaction(countryDetailsFrag, TAG_DETAILS_FRAGMENT, true, true);
+        conductFragmentTransaction(countryDetailsFrag, TAG_DETAILS_FRAGMENT, false, true);
     }
 
 /*
@@ -106,10 +106,9 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
      * @param addOrReplaceFlag If true then it means that it's the first time a fragment is being added
      * @param backStackFlag If true then add to back stack else don't
      */
-    @SuppressWarnings("SameParameterValue")
     private void conductFragmentTransaction(Fragment targetFragment, String tag, boolean addOrReplaceFlag, boolean backStackFlag) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if(addOrReplaceFlag)fragmentTransaction.replace(R.id.fragmentCanvas,targetFragment,tag);
+        if(!addOrReplaceFlag)fragmentTransaction.replace(R.id.fragmentCanvas,targetFragment,tag);
         else fragmentTransaction.add(R.id.fragmentCanvas,targetFragment,tag);
         if(backStackFlag)fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();

@@ -149,7 +149,6 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
     }
 
     private void initialize() {
-        this.countriesEntireHolderRV = new RecyclerView(this.getContext());
         this.countriesListRecyclerViewAdapter = new CountriesListRecyclerViewAdapter(new ArrayList<>(),
                 LayoutInflater.from(this.getContext()), this.picasso);
 

@@ -164,14 +164,12 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
     }
 
     private void setUpRVs() {
-        this.currencyHolderRV = new RecyclerView(this.getContext());
         this.currencyHolderRV.setAdapter(this.currenciesRVAdapter);
         this.currencyHolderRV.setLayoutManager(new LinearLayoutManager(this.getContext()));
         this.currencyHolderRV
                 .addItemDecoration(new DividerItemDecoration(this.currencyHolderRV.getContext(),
                         DividerItemDecoration.VERTICAL));
 
-        this.timezoneHolderRV = new RecyclerView(this.getContext());
         this.timezoneHolderRV.setAdapter(this.timeZoneRVAdapter);
         this.timezoneHolderRV.setLayoutManager(new LinearLayoutManager(this.getContext()));
         this.timezoneHolderRV

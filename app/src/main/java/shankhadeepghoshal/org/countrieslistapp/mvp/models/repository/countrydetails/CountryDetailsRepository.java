@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import javax.inject.Inject;
 
-import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFullEntity;
 import shankhadeepghoshal.org.countrieslistapp.services.localdatabase.CountriesLocalDb;
 import shankhadeepghoshal.org.countrieslistapp.services.rest.IRestServiceDataFetcher;
@@ -19,15 +19,16 @@ public class CountryDetailsRepository {
         this.countriesLocalDb = countriesLocalDb;
     }
 
-    public Flowable<CountriesFullEntity> getParticularCountry(@NonNull String countryName, @NonNull Boolean isInternetPresent) {
-        Flowable<CountriesFullEntity> countriesFullEntityFlowable;
+    public Maybe<CountriesFullEntity> getParticularCountry(@NonNull String countryName, @NonNull
+            Boolean isInternetPresent) {
+        Maybe<CountriesFullEntity> countriesFullEntityFlowable;
         if(isInternetPresent){
-            countriesFullEntityFlowable = this.countriesWSApi.getParticularCountry(countryName);
-            this.countriesLocalDb.getCountriesLocalDbDAO().insertSingleCountry(countriesFullEntityFlowable.blockingSingle());
+            countriesFullEntityFlowable = this.countriesWSApi
+                    .getParticularCountry(countryName)
+                    .doOnSuccess(countriesFullEntity -> countriesLocalDb.getCountriesLocalDbDAO().insertSingleCountry(countriesFullEntity));
         } else countriesFullEntityFlowable = this.countriesLocalDb
                     .getCountriesLocalDbDAO()
-                    .getCountryByName(countryName)
-                .toFlowable();
+                    .getCountryByName(countryName);
         return countriesFullEntityFlowable;
     }
 }
