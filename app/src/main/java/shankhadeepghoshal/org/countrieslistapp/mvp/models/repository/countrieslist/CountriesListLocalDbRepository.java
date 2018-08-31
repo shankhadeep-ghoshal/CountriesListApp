@@ -31,7 +31,10 @@ public class CountriesListLocalDbRepository {
     }
 
     void updateLocalDb(List<CountriesFullEntity> updatedCountriesList) {
-        countriesLocalDb.getCountriesLocalDbDAO().insertAllCountries(updatedCountriesList);
+        Maybe.create(emitter -> countriesLocalDb.getCountriesLocalDbDAO().insertAllCountries(updatedCountriesList))
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe();
     }
 
     @SuppressLint("CheckResult")
