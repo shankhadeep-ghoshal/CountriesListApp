@@ -14,22 +14,17 @@
         tools:context=".ui.MainActivity"
         android:baselineAligned="false">
 
-        <fragment
-            android:id="@+id/fragment2"
-            android:name="shankhadeepghoshal.org.countrieslistapp.ui.countrieslist.CountriesListFrag"
-            android:tag="@string/TAG_LIST_FRAGMENT"
+        <FrameLayout
+            android:id="@+id/ListCountriesFragmentCanvas"
+            android:background="@color/colorGreyShade2"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            tools:layout="@layout/fragment_countries_list" />
-
-        <fragment
-            android:id="@+id/fragment3"
-            android:name="shankhadeepghoshal.org.countrieslistapp.ui.countrydetail.CountryDetailsFrag"
-            android:tag="@string/TAG_DETAILS_FRAGMENT"
+            android:layout_weight="0.6" />
+        <FrameLayout
+            android:id="@+id/DetailsCountryFragmentCanvas"
+            android:background="@color/colorGreyShade"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            tools:layout="@layout/fragment_country_details" />
+            android:layout_weight="1" />
     </LinearLayout>
 </android.support.v4.widget.SwipeRefreshLayout>

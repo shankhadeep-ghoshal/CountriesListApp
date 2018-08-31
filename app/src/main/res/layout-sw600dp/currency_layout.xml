@@ -23,7 +23,7 @@
             android:ellipsize="end"
             android:scrollHorizontally="true"
             android:text="@string/currency_code"
-            android:textSize="15sp"
+            android:textSize="45sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -42,7 +42,7 @@
             android:maxLines="2"
             android:scrollHorizontally="true"
             android:text="@string/currency"
-            android:textSize="15sp"
+            android:textSize="45sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/CurrencySymbolLabel"
             app:layout_constraintTop_toTopOf="parent" />
@@ -67,7 +67,7 @@
             android:ellipsize="end"
             android:scrollHorizontally="true"
             android:text="@string/currency_symbol"
-            android:textSize="15sp"
+            android:textSize="45sp"
             app:layout_constraintStart_toStartOf="parent" />
 
         <android.support.v7.widget.AppCompatTextView
@@ -85,7 +85,7 @@
             android:maxLines="2"
             android:scrollHorizontally="true"
             android:text="@string/currency"
-            android:textSize="15sp"
+            android:textSize="45sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/CurrencySymbolLabel" />
     </android.support.v7.widget.LinearLayoutCompat>
@@ -109,7 +109,7 @@
             android:ellipsize="end"
             android:scrollHorizontally="true"
             android:text="@string/currency_name"
-            android:textSize="15sp"
+            android:textSize="45sp"
             app:layout_constraintStart_toStartOf="parent" />
 
         <android.support.v7.widget.AppCompatTextView
@@ -127,7 +127,7 @@
             android:maxLines="3"
             android:scrollHorizontally="true"
             android:text="@string/currency"
-            android:textSize="15sp"
+            android:textSize="45sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/CurrencySymbolLabel" />
     </android.support.v7.widget.LinearLayoutCompat>

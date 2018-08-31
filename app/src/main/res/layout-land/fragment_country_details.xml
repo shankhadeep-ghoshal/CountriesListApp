@@ -12,10 +12,10 @@
 
         <android.support.v7.widget.AppCompatImageView
             android:id="@+id/CountryFlagDetails"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:contentDescription="@string/app_name"
-            app:layout_constraintDimensionRatio="H,3.4:1"
+            app:layout_constraintDimensionRatio="w,5:11"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
