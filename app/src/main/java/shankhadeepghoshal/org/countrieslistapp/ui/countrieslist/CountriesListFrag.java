@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,8 +15,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +44,6 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
     public static final String TAG_LIST_FRAGMENT = "ListFragment";
 
     @Inject
-    Picasso picasso;
-    @Inject
     CountriesListPresenter countriesListPresenter;
 
     private IFragmentToFragmentMediator listeningActivity;
@@ -54,12 +51,12 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
 
     @BindView(R.id.CountriesEntireHolderRV)
     RecyclerView countriesEntireHolderRV;
+
     private CountriesListRecyclerViewAdapter countriesListRecyclerViewAdapter;
     private Unbinder unbinder;
+    private AppCompatActivity appCompatActivity;
 
-    public CountriesListFrag() {
-        // Required empty public constructor
-    }
+    public CountriesListFrag() {}
 
     @Override
     public void onAttach(Context context) {
@@ -72,8 +69,8 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
                 .inject(this);
         super.onAttach(context);
         try{
-            this.listeningActivity = (MainActivity) context;
-
+            this.listeningActivity = (IFragmentToFragmentMediator) context;
+            this.appCompatActivity = (AppCompatActivity) context;
             this.frag2FragCommViewModel = ViewModelProviders
                     .of((MainActivity) context)
                     .get(Frag2FragCommViewModel.class);
@@ -83,21 +80,11 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        //noinspection ConstantConditions
-        /*DaggerCountryComponents.builder()
-                .appComponents(((MainActivity)getActivity()).provideAppComponents())
-                .build();*/
-    }
-
-    @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_countries_list, container, false);
         if(v!=null) this.unbinder = ButterKnife.bind(this,v);
 
-        // Inflate the layout for this fragment
         initialize();
         this.countriesListPresenter.getCountries();
         setUpListItemClickListener();
@@ -132,25 +119,27 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
 
     @Override
     public void onLoadCountriesDataFull(List<CountriesFullEntity> countriesFullData) {
-//        this.countriesListRecyclerViewAdapter.setCountriesFullEntityList(countriesFullData);
         Log.d(TAG_LIST_FRAGMENT,"Data Received in List Fragment");
-        Log.d(TAG_LIST_FRAGMENT,countriesFullData.get(0).getName());
+        Log.d(TAG_LIST_FRAGMENT,countriesFullData.get(0).toString());
         this.frag2FragCommViewModel.setListOfCountriesData(countriesFullData);
     }
 
     @Override
     public void onErrorEncountered(String errorMessage) {
         Toast.makeText(getContext(), errorMessage,Toast.LENGTH_SHORT).show();
+        this.listeningActivity.makeSwipeAnimationStopAfterUpdate();
     }
 
     @Override
     public void onPerformUpdateAction() {
         callToPresenterToUpdateListOfCountriesOnInternetPresent(this.getContext());
+        this.listeningActivity.makeSwipeAnimationStopAfterUpdate();
     }
 
     private void initialize() {
         this.countriesListRecyclerViewAdapter = new CountriesListRecyclerViewAdapter(new ArrayList<>(),
-                LayoutInflater.from(this.getContext()), this.picasso);
+                this.appCompatActivity,
+                LayoutInflater.from(this.getContext()));
 
         this.countriesEntireHolderRV.setLayoutManager(new LinearLayoutManager(this.getContext()));
         this.countriesEntireHolderRV
@@ -168,7 +157,8 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
 
     private void manageViewModelAndDetailsFragmentInvoker(int position) {
         this.frag2FragCommViewModel
-                .setSingleCountryEntry(this.countriesListRecyclerViewAdapter.getCountriesFullEntityAtPosition(position));
+                .setSingleCountryEntry(this.countriesListRecyclerViewAdapter
+                        .getCountriesFullEntityAtPosition(position));
 
         this.countriesListRecyclerViewAdapter.setCurrentPosition(position);
         this.listeningActivity.invokeDetailsFragmentOnListItemClickedInListFragmentViewModel();

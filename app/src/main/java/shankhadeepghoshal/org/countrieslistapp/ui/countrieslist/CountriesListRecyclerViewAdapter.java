@@ -1,17 +1,16 @@
 package shankhadeepghoshal.org.countrieslistapp.ui.countrieslist;
 
-import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
+import com.ahmadrosid.svgloader.SvgLoader;
 
 import java.util.List;
 
@@ -23,14 +22,16 @@ import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFull
 public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<CountriesListRecyclerViewAdapter.CountriesListViewHolder>{
     private List<CountriesFullEntity> countriesFullEntityList;
     private final LayoutInflater layoutInflater;
-    private final Picasso picasso;
     private CountriesListRVClickListener countriesListRVClickListener;
+    private AppCompatActivity appCompatActivity;
     private int currentPosition;
 
-    CountriesListRecyclerViewAdapter(List<CountriesFullEntity> countriesFullEntityList, LayoutInflater layoutInflater, Picasso picasso) {
+    CountriesListRecyclerViewAdapter(List<CountriesFullEntity> countriesFullEntityList,
+                                     AppCompatActivity appCompatActivity,
+                                     LayoutInflater layoutInflater) {
         this.countriesFullEntityList = countriesFullEntityList;
         this.layoutInflater = layoutInflater;
-        this.picasso = picasso;
+        this.appCompatActivity = appCompatActivity;
         this.currentPosition = 0;
     }
 
@@ -42,9 +43,8 @@ public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<Count
 
     @Override
     public void onBindViewHolder(@NonNull CountriesListViewHolder holder, int position) {
-        CountriesFullEntity countriesFullEntity = countriesFullEntityList.get(position);
-        picasso.load(Uri.parse(countriesFullEntity.getFlag())).into(holder.countryIcon);
-        holder.nameOfCountry.setText(countriesFullEntity.getName());
+        CountriesFullEntity countriesFullEntity = this.countriesFullEntityList.get(position);
+        holder.bind(countriesFullEntity,this.appCompatActivity);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<Count
     }
 
     int getCurrentPosition() {
-        return currentPosition;
+        return this.currentPosition;
     }
 
     void setCurrentPosition(int currentPosition) {
@@ -75,12 +75,23 @@ public class CountriesListRecyclerViewAdapter extends RecyclerView.Adapter<Count
 
     class CountriesListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        TextView nameOfCountry;
+        @BindView(R.id.NameOfCountry)
+        AppCompatTextView nameOfCountry;
+        @BindView(R.id.CountryIcon)
         AppCompatImageView countryIcon;
         CountriesListViewHolder(View itemView) {
             super(itemView);
-            this.countryIcon = itemView.findViewById(R.id.CountryIcon);
-            this.nameOfCountry = itemView.findViewById(R.id.NameOfCountry);
+            ButterKnife.bind(this,itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        void bind(CountriesFullEntity countriesFullEntity, AppCompatActivity appCompatActivity) {
+            SvgLoader
+                    .pluck()
+                    .with(appCompatActivity)
+                    .setPlaceHolder(R.mipmap.ic_launcher,R.mipmap.ic_launcher_round)
+                    .load(countriesFullEntity.getFlag(), this.countryIcon);
+            this.nameOfCountry.setText(countriesFullEntity.getName());
         }
 
         @Override
