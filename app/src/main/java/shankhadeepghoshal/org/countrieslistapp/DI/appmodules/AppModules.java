@@ -4,9 +4,6 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
-import com.squareup.picasso.LruCache;
-import com.squareup.picasso.Picasso;
-
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
@@ -21,11 +18,11 @@ import shankhadeepghoshal.org.countrieslistapp.services.localdatabase.CountriesL
 
 @Module
 public class AppModules {
-    private String baseUrl;
+    private String baseUrlData;
     private Context ctx;
 
-    public AppModules(String baseUrl, Context ctx) {
-        this.baseUrl = baseUrl;
+    public AppModules(String baseUrlData, Context ctx) {
+        this.baseUrlData = baseUrlData;
         this.ctx = ctx;
     }
 
@@ -37,7 +34,7 @@ public class AppModules {
 
     @Singleton
     @Provides
-    public OkHttpClient provideOkHttpClient() {
+    public OkHttpClient provideOkHttpClientData() {
         return new OkHttpClient.Builder()
                 .connectTimeout(20, TimeUnit.SECONDS)
                 .readTimeout(20, TimeUnit.SECONDS)
@@ -52,21 +49,15 @@ public class AppModules {
 
     @Singleton
     @Provides
-    public Retrofit provideRetrofit(OkHttpClient okHttpClient, JacksonConverterFactory jacksonConverterFactory, RxJava2CallAdapterFactory rxJava2CallAdapterFactory) {
+    public Retrofit provideRetrofitData(OkHttpClient okHttpClient,
+                                        JacksonConverterFactory jacksonConverterFactory,
+                                        RxJava2CallAdapterFactory rxJava2CallAdapterFactory) {
         return new Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl(baseUrlData)
                 .addConverterFactory(jacksonConverterFactory)
                 .addCallAdapterFactory(rxJava2CallAdapterFactory)
                 .client(okHttpClient)
                 .build();
-    }
-
-    @Singleton
-    @Provides
-    public Picasso.Builder providePicasso(Context context) {
-        return new Picasso
-                .Builder(context)
-                .memoryCache(new LruCache(10*1024*1024));
     }
 
     @Singleton

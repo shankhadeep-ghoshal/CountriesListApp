@@ -2,8 +2,6 @@ package shankhadeepghoshal.org.countrieslistapp.DI.countrymodule;
 
 import android.arch.persistence.room.RoomDatabase;
 
-import com.squareup.picasso.Picasso;
-
 import dagger.Module;
 import dagger.Provides;
 import retrofit2.Retrofit;
@@ -38,12 +36,6 @@ public class CountryModule {
     @Provides
     CountriesLocalDb provideCountriesLocalDb(RoomDatabase.Builder<CountriesLocalDb> databaseBuilder) {
         return databaseBuilder.build();
-    }
-
-    @ScopePerActivity
-    @Provides
-    Picasso providePicasso(Picasso.Builder picassoBuilder) {
-        return picassoBuilder.build();
     }
 
     @ScopePerActivity

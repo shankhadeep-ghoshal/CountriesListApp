@@ -17,7 +17,7 @@ public class CentralApplication extends Application {
         System.loadLibrary("native-lib");
     }
 
-    private native String getBaseUrl();
+    private native String getBaseUrlData();
 
     private AppComponents appComponents;
 
@@ -31,7 +31,7 @@ public class CentralApplication extends Application {
 
     private void initAppComponents() {
         this.appComponents = DaggerAppComponents.builder()
-                .appModules(new AppModules(getBaseUrl(),this))
+                .appModules(new AppModules(getBaseUrlData(),this))
                 .build();
         Log.d(TAG_APPLICATION,"App dependencies graph created");
     }

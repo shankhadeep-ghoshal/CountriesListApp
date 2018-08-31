@@ -3,8 +3,8 @@ package shankhadeepghoshal.org.countrieslistapp.DI.appcomponent;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
-import com.squareup.picasso.Picasso;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import dagger.Component;
@@ -15,9 +15,8 @@ import shankhadeepghoshal.org.countrieslistapp.services.localdatabase.CountriesL
 @Singleton
 @Component(modules = AppModules.class)
 public interface AppComponents {
-    Retrofit supplyRetrofit();
+    Retrofit supplyRetrofitData();
     Context supplyContext();
-    Picasso.Builder supplyPicassoBuilder();
     RoomDatabase.Builder<CountriesLocalDb> supplyCountriesLocalDbBuilder();
    /* void inject(CountriesListPresenter countriesListPresenter);
     void inject(CountryDetailsPresenter countryDetailsPresenter);*/
