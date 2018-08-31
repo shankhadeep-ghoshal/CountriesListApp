@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
     SwipeRefreshLayout swipeRefreshLayout;
 
     private Unbinder unbinder;
+    private Configuration config;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,12 +37,34 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
         setContentView(R.layout.activity_main);
         unbinder = ButterKnife.bind(this);
         swipeRefreshLayout.setOnRefreshListener(this);
-        Configuration config = getResources().getConfiguration();
+
+        this.config = getResources().getConfiguration();
+
         Log.d(TAG_MAIN_ACTIVITY,"Main Activity View Created");
         if(config.smallestScreenWidthDp<600){
             CountriesListFrag countriesListFrag = new CountriesListFrag();
-            conductFragmentTransaction(countriesListFrag,TAG_LIST_FRAGMENT, true, false);
+
+            performFragmentTransaction(countriesListFrag,
+                    TAG_LIST_FRAGMENT,
+                    R.id.SmallScreenPortraitFragmentCanvas,
+                    true, false);
+
             Log.d(TAG_MAIN_ACTIVITY,"Main Activity < 600 and portrait");
+        } else{
+            CountriesListFrag countriesListFrag = new CountriesListFrag();
+            CountryDetailsFrag countryDetailsFrag = CountryDetailsFrag.newInstance();
+
+            performFragmentTransaction(countriesListFrag,
+                    TAG_LIST_FRAGMENT,
+                    R.id.ListCountriesFragmentCanvas,
+                    true, false);
+
+            performFragmentTransaction(countryDetailsFrag,
+                    TAG_DETAILS_FRAGMENT,
+                    R.id.DetailsCountryFragmentCanvas,
+                    true, false);
+
+            Log.d(TAG_MAIN_ACTIVITY,"Main Activity large screen created");
         }
     }
 
@@ -71,24 +94,19 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
         Bundle data = new Bundle();
         data.putSerializable("data",countriesFullEntity);
         countryDetailsFrag.setArguments(data);
-        conductFragmentTransaction(countryDetailsFrag, TAG_DETAILS_FRAGMENT, false, true);
+        dealWithDetailsFragmentInflate(countryDetailsFrag);
     }
 
     @Override
     public void invokeDetailsFragmentOnListItemClickedInListFragmentViewModel() {
-
-        CountryDetailsFrag countryDetailsFrag =
-                (CountryDetailsFrag) getSupportFragmentManager().findFragmentByTag(TAG_DETAILS_FRAGMENT);
-
-        if(countryDetailsFrag!=null && countryDetailsFrag.isVisible())
-        conductFragmentTransaction(countryDetailsFrag, TAG_DETAILS_FRAGMENT, false, true);
+        CountryDetailsFrag countryDetailsFrag = CountryDetailsFrag.newInstance();
+        dealWithDetailsFragmentInflate(countryDetailsFrag);
     }
 
-/*
-    public AppComponents provideAppComponents() {
-        return ((CentralApplication)getApplication()).getAppComponents();
+    @Override
+    public void makeSwipeAnimationStopAfterUpdate() {
+        if(this.swipeRefreshLayout.isRefreshing()) this.swipeRefreshLayout.setRefreshing(false);
     }
-*/
 
     private void makeViewsSignalUpdateOfData(BaseView view) {
         if(view != null) view.onPerformUpdateAction();
@@ -100,16 +118,27 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
         return null;
     }
 
-    /**
-     * @param targetFragment - fragment instance to be shown
-     * @param tag - fragment tag
-     * @param addOrReplaceFlag If true then it means that it's the first time a fragment is being added
-     * @param backStackFlag If true then add to back stack else don't
-     */
-    private void conductFragmentTransaction(Fragment targetFragment, String tag, boolean addOrReplaceFlag, boolean backStackFlag) {
+    private void dealWithDetailsFragmentInflate(CountryDetailsFrag countryDetailsFrag) {
+        if(config.smallestScreenWidthDp<600){
+            performFragmentTransaction(countryDetailsFrag,
+                    TAG_DETAILS_FRAGMENT,
+                    R.id.SmallScreenPortraitFragmentCanvas,
+                    false, true);
+            Log.d(TAG_MAIN_ACTIVITY,"Switched to Details Fragment small screen");
+        } else{
+            performFragmentTransaction(countryDetailsFrag,
+                    TAG_DETAILS_FRAGMENT,
+                    R.id.DetailsCountryFragmentCanvas,
+                    true, false);
+            Log.d(TAG_MAIN_ACTIVITY,"Switched to Details Fragment Big Screen");
+        }
+    }
+
+    private void performFragmentTransaction(Fragment targetFragment, String tag, int resourceId, boolean addOrReplaceFlag, boolean
+            backStackFlag) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        if(!addOrReplaceFlag)fragmentTransaction.replace(R.id.fragmentCanvas,targetFragment,tag);
-        else fragmentTransaction.add(R.id.fragmentCanvas,targetFragment,tag);
+        if(!addOrReplaceFlag)fragmentTransaction.replace(resourceId,targetFragment,tag);
+        else fragmentTransaction.add(resourceId,targetFragment,tag);
         if(backStackFlag)fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
