@@ -15,23 +15,22 @@ import shankhadeepghoshal.org.countrieslistapp.R;
 
 public class TimeZoneRVAdapter extends RecyclerView.Adapter<TimeZoneRVAdapter.TimeZoneViewHolder> {
     private List<String> timeZoneList;
-    private LayoutInflater layoutInflater;
 
-    public TimeZoneRVAdapter(List<String> timeZoneList, LayoutInflater layoutInflater) {
+    TimeZoneRVAdapter(List<String> timeZoneList) {
         this.timeZoneList = timeZoneList;
-        this.layoutInflater = layoutInflater;
     }
 
     @NonNull
     @Override
     public TimeZoneViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new TimeZoneViewHolder(this.layoutInflater.inflate(R.layout.timezones_layout,parent,false));
+        return new TimeZoneViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.timezones_layout,parent,false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull TimeZoneViewHolder holder, int position) {
         String tz = this.timeZoneList.get(position);
-        holder.timeZone.setText(tz);
+        holder.bind(tz);
     }
 
     @Override
@@ -44,14 +43,18 @@ public class TimeZoneRVAdapter extends RecyclerView.Adapter<TimeZoneRVAdapter.Ti
         notifyDataSetChanged();
     }
 
-    static class TimeZoneViewHolder extends RecyclerView.ViewHolder {
+    class TimeZoneViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.TimeZone)
         AppCompatTextView timeZone;
 
-        public TimeZoneViewHolder(View itemView) {
+        TimeZoneViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+        }
+
+        private void bind(String timeZoneText) {
+            timeZone.setText(timeZoneText);
         }
     }
 }

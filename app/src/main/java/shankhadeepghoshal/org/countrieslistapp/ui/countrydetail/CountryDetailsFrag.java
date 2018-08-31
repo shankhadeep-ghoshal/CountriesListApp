@@ -13,12 +13,13 @@ import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
+import com.ahmadrosid.svgloader.SvgLoader;
 
 import java.util.Objects;
 
@@ -43,8 +44,11 @@ import shankhadeepghoshal.org.countrieslistapp.utilitiespackage.DetectInternetCo
  * A simple {@link Fragment} subclass.
  */
 public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
-    // private CountriesFullEntity countriesFullEntity;
+
+    private static final String TAG_COUNTRY_DETAIL_FRAG = "FragmentCountryDetail";
+
     private Frag2FragCommViewModel frag2FragCommViewModel;
+    private CountriesFullEntity countriesFullEntity;
 
     @BindView(R.id.CountryFlagDetails)
     AppCompatImageView countryFlagDetails;
@@ -57,8 +61,6 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
     @BindView(R.id.TimeZoneHolderRV)
     RecyclerView timezoneHolderRV;
 
-    @Inject
-    Picasso picasso;
     @Inject
     CountryDetailsPresenter countryDetailsPresenter;
 
@@ -85,7 +87,7 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
                 .inject(this);
         super.onAttach(context);
         try{
-            this.listeningActivity = (MainActivity) context;
+            this.listeningActivity = (IFragmentToFragmentMediator) context;
             this.frag2FragCommViewModel = ViewModelProviders.of((MainActivity) context).get(Frag2FragCommViewModel.class);
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement IFragmentToFragmentMediator");
@@ -99,8 +101,7 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
         View v = inflater.inflate(R.layout.fragment_country_details, container, false);
         if(v!=null) this.unbinder = ButterKnife.bind(this,v);
 
-        setUpLayoutBindings(this.currenciesRVAdapter==null,
-                this.timeZoneRVAdapter==null);
+        setUpLayoutBindings();
 
         return v;
     }
@@ -113,6 +114,7 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
         Parcelable pcTimeZone = this.timezoneHolderRV.getLayoutManager().onSaveInstanceState();
         outState.putParcelable("currencyData",pcCurrency);
         outState.putParcelable("timezoneData",pcTimeZone);
+        outState.putString("imageUrl",this.countriesFullEntity.getFlag());
     }
 
     @Override
@@ -120,17 +122,24 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
         super.onViewStateRestored(savedInstanceState);
         restoreRVInstanceState(savedInstanceState, this.currencyHolderRV);
         restoreRVInstanceState(savedInstanceState, this.timezoneHolderRV);
+        if (savedInstanceState != null) {
+            placeCountryFlagImageInImageView(savedInstanceState.getString("imageUrl"));
+        }
     }
 
     @Override
     public void onLoadParticularCountryData(CountriesFullEntity countriesFullEntity) {
-        setUpDataForUI(currenciesRVAdapter==null,timeZoneRVAdapter==null,countriesFullEntity);
+        setUpDataForUI(countriesFullEntity);
+        Log.d(TAG_COUNTRY_DETAIL_FRAG,countriesFullEntity.toString());
+        this.countriesFullEntity = countriesFullEntity;
         this.frag2FragCommViewModel.setSingleCountryEntry(countriesFullEntity);
+        this.listeningActivity.makeSwipeAnimationStopAfterUpdate();
     }
 
     @Override
     public void onErrorEncountered(String errorMessage) {
         Toast.makeText(getContext(), errorMessage, Toast.LENGTH_SHORT).show();
+        this.listeningActivity.makeSwipeAnimationStopAfterUpdate();
     }
 
     @Override
@@ -142,25 +151,21 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
                 .getName());
     }
 
-    private void setUpLayoutBindings(boolean currencyAdapterFlag, boolean timezoneAdapterFlag) {
-        setUpRVs();
+    private void setUpLayoutBindings() {
         this.frag2FragCommViewModel
                 .getLiveDataSingleCountryData()
                 .observe(this, countriesFullEntity1 -> {
                     if(countriesFullEntity1!=null)
-                        setUpDataForUI(currencyAdapterFlag, timezoneAdapterFlag, countriesFullEntity1);
+                        setUpDataForUI(countriesFullEntity1);
+                        setUpRVs();
                 });
     }
 
-    private void setUpDataForUI(boolean currencyAdapterFlag, boolean timezoneAdapterFlag, CountriesFullEntity holderInstance) {
-        this.picasso.load(holderInstance.getFlag()).into(this.countryFlagDetails);
+    private void setUpDataForUI(CountriesFullEntity holderInstance) {
+        placeCountryFlagImageInImageView(holderInstance.getFlag());
         this.countryNameDetails.setText(holderInstance.getName());
-        if(currencyAdapterFlag)
-            this.currenciesRVAdapter = new CurrenciesRVAdapter(holderInstance.getCurrencies(),
-                    LayoutInflater.from(this.getContext()));
-        if(timezoneAdapterFlag)
-            this.timeZoneRVAdapter = new TimeZoneRVAdapter(holderInstance.getTimezones(),
-                    LayoutInflater.from(this.getContext()));
+            this.currenciesRVAdapter = new CurrenciesRVAdapter(holderInstance.getCurrencies());
+            this.timeZoneRVAdapter = new TimeZoneRVAdapter(holderInstance.getTimezones());
     }
 
     private void setUpRVs() {
@@ -189,6 +194,14 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
                     .getLayoutManager()
                     .onRestoreInstanceState(savedInstance.getParcelable("currencyData"));
         }
+    }
+
+    private void placeCountryFlagImageInImageView(String flag) {
+        SvgLoader
+                .pluck()
+                .with(this.getActivity())
+                .setPlaceHolder(R.mipmap.ic_launcher, R.mipmap.ic_launcher_round)
+                .load(flag, countryFlagDetails);
     }
 
     @Override

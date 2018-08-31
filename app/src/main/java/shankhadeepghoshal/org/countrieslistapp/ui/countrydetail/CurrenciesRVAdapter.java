@@ -16,25 +16,22 @@ import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CurrenciesEnt
 
 public class CurrenciesRVAdapter extends RecyclerView.Adapter<CurrenciesRVAdapter.CurrenciesViewHolder> {
     private List<CurrenciesEntity> currenciesEntities;
-    private LayoutInflater layoutInflater;
 
-    public CurrenciesRVAdapter(List<CurrenciesEntity> currenciesEntities, LayoutInflater layoutInflater) {
+    CurrenciesRVAdapter(List<CurrenciesEntity> currenciesEntities) {
         this.currenciesEntities = currenciesEntities;
-        this.layoutInflater = layoutInflater;
     }
 
     @NonNull
     @Override
     public CurrenciesViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new CurrenciesViewHolder(this.layoutInflater.inflate(R.layout.currency_layout,parent,false));
+        return new CurrenciesViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.currency_layout,parent,false));
     }
 
     @Override
     public void onBindViewHolder(@NonNull CurrenciesViewHolder holder, int position) {
         CurrenciesEntity currencyData = currenciesEntities.get(position);
-        holder.currencyCodeTv.setText(currencyData.getCode());
-        holder.currencyNameTV.setText(currencyData.getName());
-        holder.currencySymbolTV.setText(currencyData.getSymbol());
+        holder.bind(currencyData);
     }
 
     @Override
@@ -47,7 +44,7 @@ public class CurrenciesRVAdapter extends RecyclerView.Adapter<CurrenciesRVAdapte
         notifyDataSetChanged();
     }
 
-    static class CurrenciesViewHolder extends RecyclerView.ViewHolder {
+    class CurrenciesViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.CurrencyCode)
         AppCompatTextView currencyCodeTv;
@@ -55,9 +52,16 @@ public class CurrenciesRVAdapter extends RecyclerView.Adapter<CurrenciesRVAdapte
         AppCompatTextView currencyNameTV;
         @BindView(R.id.CurrencySymbol)
         AppCompatTextView currencySymbolTV;
-        public CurrenciesViewHolder(View itemView) {
+
+        CurrenciesViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+        }
+
+        void bind(CurrenciesEntity currenciesEntity) {
+            currencyCodeTv.setText(currenciesEntity.getCode());
+            currencyNameTV.setText(currenciesEntity.getName());
+            currencySymbolTV.setText(currenciesEntity.getSymbol());
         }
     }
 }
