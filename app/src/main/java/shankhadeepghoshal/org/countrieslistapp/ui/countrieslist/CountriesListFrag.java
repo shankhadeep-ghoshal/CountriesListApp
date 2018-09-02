@@ -56,6 +56,8 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
     private Unbinder unbinder;
     private AppCompatActivity appCompatActivity;
 
+    private int smallestScreenWidthInDp;
+
     public CountriesListFrag() {}
 
     @Override
@@ -74,6 +76,8 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
             this.frag2FragCommViewModel = ViewModelProviders
                     .of((MainActivity) context)
                     .get(Frag2FragCommViewModel.class);
+            this.smallestScreenWidthInDp = context.getResources().getConfiguration()
+                    .smallestScreenWidthDp;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement IFragmentToFragmentMediator");
         }
@@ -91,8 +95,19 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
 
         frag2FragCommViewModel
                 .getLiveDataListOfCountriesData()
-                .observe(this,countriesFullEntities ->
-                        countriesListRecyclerViewAdapter.setCountriesFullEntityList(countriesFullEntities));
+                .observe(this,countriesFullEntities ->{
+                    countriesListRecyclerViewAdapter.setCountriesFullEntityList
+                            (countriesFullEntities);
+                    if(savedInstanceState == null) {
+                        if (this.smallestScreenWidthInDp >=600){
+                            manageViewModelAndDetailsFragmentInvoker(0);
+                        }
+                    } else this.countriesEntireHolderRV
+                            .getLayoutManager()
+                            .onRestoreInstanceState(savedInstanceState
+                                    .getParcelable("rvCurrentPosition"));
+                        });
+
         Log.d(TAG_LIST_FRAGMENT,"List Fragment View Created");
 
         return v;
@@ -103,17 +118,6 @@ public class CountriesListFrag extends Fragment implements CountriesListView {
         super.onSaveInstanceState(outState);
         if (this.countriesEntireHolderRV!=null)
         outState.putParcelable("rvCurrentPosition",this.countriesEntireHolderRV.getLayoutManager().onSaveInstanceState());
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        if(savedInstanceState!=null) {
-            this.countriesEntireHolderRV
-                    .getLayoutManager()
-                    .onRestoreInstanceState(savedInstanceState
-                            .getParcelable("rvCurrentPosition"));
-        }
     }
 
     @Override
