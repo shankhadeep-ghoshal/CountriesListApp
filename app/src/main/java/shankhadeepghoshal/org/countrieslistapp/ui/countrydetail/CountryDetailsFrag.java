@@ -88,11 +88,14 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
         super.onAttach(context);
         try{
             this.listeningActivity = (IFragmentToFragmentMediator) context;
-            this.frag2FragCommViewModel = ViewModelProviders.of((MainActivity) context).get(Frag2FragCommViewModel.class);
+            this.frag2FragCommViewModel = ViewModelProviders.of(getActivity())
+                    .get(Frag2FragCommViewModel.class);
+
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString() + " must implement IFragmentToFragmentMediator");
         }
     }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -100,9 +103,12 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_country_details, container, false);
         if(v!=null) this.unbinder = ButterKnife.bind(this,v);
-
+        if(savedInstanceState!=null) {
+            this.countriesFullEntity = (CountriesFullEntity) savedInstanceState.getSerializable("countryData");
+            if (this.countriesFullEntity!=null)
+            this.frag2FragCommViewModel.setSingleCountryEntry(this.countriesFullEntity);
+        }
         setUpLayoutBindings();
-
         return v;
     }
 
@@ -110,22 +116,9 @@ public class CountryDetailsFrag extends Fragment implements CountryDetailsView {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         // TODO: Save the entire CountryObject and call the bindView method onViewStateRestored()
-        Parcelable pcCurrency = this.currencyHolderRV.getLayoutManager().onSaveInstanceState();
-        Parcelable pcTimeZone = this.timezoneHolderRV.getLayoutManager().onSaveInstanceState();
-        outState.putParcelable("currencyData",pcCurrency);
-        outState.putParcelable("timezoneData",pcTimeZone);
-        outState.putString("imageUrl",this.countriesFullEntity.getFlag());
+        outState.putSerializable("countryData", countriesFullEntity);
     }
 
-    @Override
-    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
-        super.onViewStateRestored(savedInstanceState);
-        restoreRVInstanceState(savedInstanceState, this.currencyHolderRV);
-        restoreRVInstanceState(savedInstanceState, this.timezoneHolderRV);
-        if (savedInstanceState != null) {
-            placeCountryFlagImageInImageView(savedInstanceState.getString("imageUrl"));
-        }
-    }
 
     @Override
     public void onLoadParticularCountryData(CountriesFullEntity countriesFullEntity) {
