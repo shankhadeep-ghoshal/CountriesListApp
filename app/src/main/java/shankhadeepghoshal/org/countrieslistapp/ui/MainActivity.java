@@ -96,17 +96,27 @@ public class MainActivity extends AppCompatActivity implements IFragmentToFragme
         if(getSupportFragmentManager().getBackStackEntryCount() > 1) {
             Fragment f = fm.findFragmentByTag(TAG_DETAILS_FRAGMENT);
             if (f instanceof  CountryDetailsFrag) fm.popBackStack();
-//            else this.finish();
         }
     }
 
     @Override
     public void onRefresh() {
         // TODO : Code the refreshing data callback here
-        this.countriesListFrag = (CountriesListFrag) returnNonNullRunningFragmentByTagName(TAG_LIST_FRAGMENT);
-        this.countryDetailsFrag = (CountryDetailsFrag) returnNonNullRunningFragmentByTagName(TAG_DETAILS_FRAGMENT);
-        makeViewsSignalUpdateOfData(this.countriesListFrag);
-        makeViewsSignalUpdateOfData(this.countryDetailsFrag);
+        if(this.config.smallestScreenWidthDp < 600) {
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                this.countriesListFrag = (CountriesListFrag) returnNonNullRunningFragmentByTagName(TAG_LIST_FRAGMENT);
+                makeViewsSignalUpdateOfData(this.countryDetailsFrag);
+            }
+            else {
+                this.countryDetailsFrag = (CountryDetailsFrag) returnNonNullRunningFragmentByTagName(TAG_DETAILS_FRAGMENT);
+                makeViewsSignalUpdateOfData(this.countriesListFrag);
+            }
+        } else {
+            this.countriesListFrag = (CountriesListFrag) returnNonNullRunningFragmentByTagName(TAG_LIST_FRAGMENT);
+            this.countryDetailsFrag = (CountryDetailsFrag) returnNonNullRunningFragmentByTagName(TAG_DETAILS_FRAGMENT);
+            makeViewsSignalUpdateOfData(this.countryDetailsFrag);
+            makeViewsSignalUpdateOfData(this.countriesListFrag);
+        }
     }
 
     @Override
