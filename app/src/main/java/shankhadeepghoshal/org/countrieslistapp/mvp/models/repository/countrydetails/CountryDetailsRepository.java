@@ -6,15 +6,15 @@ import javax.inject.Inject;
 
 import io.reactivex.Maybe;
 import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFullEntity;
-import shankhadeepghoshal.org.countrieslistapp.services.localdatabase.CountriesLocalDb;
-import shankhadeepghoshal.org.countrieslistapp.services.rest.IRestServiceDataFetcher;
+import shankhadeepghoshal.org.countrieslistapp.mvp.models.repository.ApiRepository;
+import shankhadeepghoshal.org.countrieslistapp.mvp.models.repository.LocalDbRepository;
 
 public class CountryDetailsRepository {
-    private final IRestServiceDataFetcher countriesWSApi;
-    private final CountriesLocalDb countriesLocalDb;
+    private final ApiRepository countriesWSApi;
+    private final LocalDbRepository countriesLocalDb;
 
     @Inject
-    public CountryDetailsRepository(IRestServiceDataFetcher countriesWSApi, CountriesLocalDb countriesLocalDb) {
+    public CountryDetailsRepository(ApiRepository countriesWSApi, LocalDbRepository countriesLocalDb) {
         this.countriesWSApi = countriesWSApi;
         this.countriesLocalDb = countriesLocalDb;
     }
@@ -25,9 +25,8 @@ public class CountryDetailsRepository {
         if(isInternetPresent){
             countriesFullEntityFlowable = this.countriesWSApi
                     .getParticularCountry(countryName)
-                    .doOnSuccess(countriesFullEntity -> countriesLocalDb.getCountriesLocalDbDAO().insertSingleCountry(countriesFullEntity));
+                    .doOnSuccess(countriesLocalDb::insertSingleCountry);
         } else countriesFullEntityFlowable = this.countriesLocalDb
-                    .getCountriesLocalDbDAO()
                     .getCountryByName(countryName);
         return countriesFullEntityFlowable;
     }

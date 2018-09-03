@@ -9,19 +9,20 @@ import io.reactivex.Maybe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFullEntity;
+import shankhadeepghoshal.org.countrieslistapp.mvp.models.repository.ApiRepository;
 import shankhadeepghoshal.org.countrieslistapp.services.rest.IRestServiceDataFetcher;
 
 public class CountriesListApiRepository {
-    private final IRestServiceDataFetcher restServiceDataFetcher; // Retrofit interface to get data from API
+    private final ApiRepository restServiceDataFetcher;
 
     @Inject
-    public CountriesListApiRepository(IRestServiceDataFetcher restServiceDataFetcher) {
+    public CountriesListApiRepository(ApiRepository restServiceDataFetcher) {
         this.restServiceDataFetcher = restServiceDataFetcher;
     }
 
     public Maybe<List<CountriesFullEntity>> getCountriesFromApi() {
         return restServiceDataFetcher
-                .getListOfCountriesData()
+                .getCountriesFromApi()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }

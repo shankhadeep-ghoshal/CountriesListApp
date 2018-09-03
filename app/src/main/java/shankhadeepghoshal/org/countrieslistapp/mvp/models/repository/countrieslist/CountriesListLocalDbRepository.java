@@ -12,36 +12,22 @@ import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import shankhadeepghoshal.org.countrieslistapp.mvp.models.entities.CountriesFullEntity;
+import shankhadeepghoshal.org.countrieslistapp.mvp.models.repository.LocalDbRepository;
 import shankhadeepghoshal.org.countrieslistapp.services.localdatabase.CountriesLocalDb;
 
 public class CountriesListLocalDbRepository {
-    private final CountriesLocalDb countriesLocalDb;
+    private final LocalDbRepository countriesLocalDb;
 
     @Inject
-    CountriesListLocalDbRepository(CountriesLocalDb countriesLocalDb) {
+    CountriesListLocalDbRepository(LocalDbRepository countriesLocalDb) {
         this.countriesLocalDb = countriesLocalDb;
     }
 
     Maybe<List<CountriesFullEntity>> getCountriesFromLocalDb() {
-        return this.countriesLocalDb
-                .getCountriesLocalDbDAO()
-                .getCountriesList()
-                .observeOn(Schedulers.io())
-                .subscribeOn(Schedulers.io());
+        return this.countriesLocalDb.getCountriesFromLocalDb();
     }
 
-    void updateLocalDb(List<CountriesFullEntity> updatedCountriesList) {
-        Maybe.create(emitter -> countriesLocalDb.getCountriesLocalDbDAO().insertAllCountries(updatedCountriesList))
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .subscribe();
-    }
-
-    @SuppressLint("CheckResult")
-    void updateLocalDb(Maybe<List<CountriesFullEntity>> updatedCountriesList) {
-        updatedCountriesList
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.io())
-                .doOnSuccess(this::updateLocalDb);
+    void updateLocalDbCountriesList(List<CountriesFullEntity> updatedCountriesList) {
+        countriesLocalDb.insertAllCountries(updatedCountriesList);
     }
 }
