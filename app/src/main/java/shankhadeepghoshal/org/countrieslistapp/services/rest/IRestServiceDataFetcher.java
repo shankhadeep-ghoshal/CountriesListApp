@@ -12,5 +12,5 @@ public interface IRestServiceDataFetcher {
     Maybe<List<CountriesFullEntity>> getListOfCountriesData();
 
     @GET("name/{name}")
-    Maybe<CountriesFullEntity> getParticularCountry(@Path("name") String name);
+    Maybe<List<CountriesFullEntity>> getParticularCountry(@Path("name") String name);
 }
